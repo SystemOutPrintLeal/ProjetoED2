@@ -1,12 +1,14 @@
+//Libraries
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 typedef char* String;
 
-int printTXT(FILE * arq,String name){
+//Init BIN
+int printBIN(FILE * arq,String name){
 
-    arq = fopen(name,"w");
+    arq = fopen(name,"wb");
     if(!arq){
         printf("\nError\n");
         return 1;
@@ -15,10 +17,30 @@ int printTXT(FILE * arq,String name){
     return 0;
 }
 
-int addTXT(FILE * arq,String name){
+//return lengh  
+int lenghBIN(FILE* arq, String name){
+
+    arq = fopen(name,"rb");
+    if(!arq){
+        printf("\nError fopen\n");
+        exit(1);
+    }
+    fseek(arq,0,SEEK_END);
+    long lengh = ftell(arq);
+
+    if(lengh == -1){
+        printf("\nError fseek\n");
+        exit(1);
+    }
+    fclose(arq);
+    return lengh;
+}
+
+//add text
+int addBIN(FILE * arq,String name){
 
     char text[1024];
-    arq = fopen(name,"a");
+    arq = fopen(name,"ab");
     if(!arq){
         printf("\nError\n");
         return 1;
@@ -26,35 +48,24 @@ int addTXT(FILE * arq,String name){
     else{
         printf("\nUse underline instead of backspace\n");
         printf("\nwrite the text here: ");
-        scanf("%s",text);
+        fgets(text,1024,stdin);
         fwrite(text,sizeof(String),1024,arq);
         fclose(arq);
     }
 }
 
-int readTXT(FILE * arq,String name){
-    
-    arq = fopen(name,"r");
-    if(!arq){
-        printf("Error");
-        return 1;
-    }
-    char text[1024];
-    fscanf(arq,"%s",text);
-    printf("\nTexto.bin : %s\n",text);
-
-}
 
 int main(){
+
     FILE * arq;
     char name[909];
     fflush(stdin);
     printf("Archives name: ");
-    scanf("%s",name);
-    strcat(name,".txt");
-    printTXT(arq,name);
-    addTXT(arq,name);
-    readTXT(arq,name);
-   
-    return 0;
+    fgets(name,909,stdin);
+    strcat(name,".bin");
+    printBIN(arq,name);
+    addBIN(arq,name);
+    long lengh = lenghBIN(arq,name);
+    printf("\nBinary lengh : %ld\n",lengh);
+
 }
